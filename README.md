@@ -2,10 +2,10 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <h3 align="center">Microservice N-Layered Domain Driven Design Template  </h3>
+  <h3 align="center">Microservice Comics Search API </h3>
 
   <p align="center">
-    Domain Driven Design Template to implement on microservice
+    Comics search App to request the comics data from Marvel Comics API  
   </p>
 </p>
 
@@ -39,7 +39,7 @@
 
 LONG PROJECT DESCRIPTION
 
-Template to implement Domain Driven Design using N-Layered microservice architecture
+Implements and request to the Marvel Comics API to retrieve and looking for comics data on it. 
 
 
 ### Built With 🧰
@@ -60,22 +60,21 @@ To run the microservice on local environment, you need:
 
 This is an example of how to list things you need to use the software and how to install them.
 
-* pyenv
-
-  ```sh
-  brew install pyenv
-  ```
-
 * Create virtual environment
 
   ```sh
-  pyenv virtualenv 3.10.5 my-env
+  python3 -m venv venv/
   ```
 
 * Activate virtual environment
 
   ```sh
-  pyenv activate my-env
+  source venv/bin/activate
+  ```
+  
+* Deactivate virtual environment
+  ```sh
+  deactivate
   ```
 
 * Environment variables required
@@ -85,16 +84,16 @@ This is an example of how to list things you need to use the software and how to
 
 Steps to run app
 
-1. Get a free API Key at [N-Layered DDD Microservice](https://github.com/jorgeMorfinezM/ms_n-layered-ddd_template)
+1. Get a free Marvel Developer portal API Key at [Marvel Developer Portal Account](https://developer.marvel.com/account)
 2. Clone the repo
    ```sh
-   git clone https://github.com/jorgeMorfinezM/ms_n-layered-ddd_template.git
+   git clone https://github.com/jorgeMorfinezM/comics_store_app.git
    ```
 3. Install project dependencies
    ```sh
    pip install -r dependencies/dev/requirements.txt
    ```
-
+4.- Set up the Marvel developer portal API Public and Private Key on the .env file using the constants documented 
 
 
 <!-- USAGE EXAMPLES -->

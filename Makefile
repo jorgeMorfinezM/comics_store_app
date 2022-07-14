@@ -1,4 +1,4 @@
-app_name = ms_n-layered-ddd_template
+app_name = comics_store_app
 
 check:
 	@git add .
