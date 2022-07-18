@@ -5,10 +5,8 @@ from marshmallow import fields
 from marshmallow import Schema
 
 
-class ModelSchema(Schema):
-    _id: fields.String()
-    __v: fields.Integer()
-    text: fields.String()
-    updatedAt: fields.DateTime()
-    deleted: fields.Boolean()
-
+class CharacterSchema(Schema):
+    id: fields.Integer()
+    name: fields.String()
+    image: fields.String()
+    appearances = fields.String()

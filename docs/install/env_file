@@ -1,0 +1,25 @@
+FLASK_SECRET_KEY=f35wQ+q+B.uH*s%MPR-mKD$t
+FLASK_APP=src/layers/http_api/application
+FLASK_ENV=development
+FLASK_RUN_PORT=9000
+ENVIRONMENT="local"
+CONTENT_TYPE = 'application/json'
+HEADERS = {'Content-Type': CONTENT_TYPE}
+
+CORS_METHOD_GET='GET'
+HTTP_METHODS_ALLOW=[CORS_METHOD_GET]
+ORIGINS=['localhost']
+
+MARVEL_URL_HOST='https://gateway.marvel.com:443'
+
+ENDPOINT_CHARACTERS_ORDERBY_NAME='/v1/public/characters?orderBy=name'
+ENDPOINT_CHARACTERS_BY_NAME='/v1/public/characters?'
+ENDPOINT_CHARACTERS_START_NAME='/v1/public/characters?'
+
+ENDPOINT_COMIC_BY_TITLE='/v1/public/comics?format=comic&formatType=comic&'
+ENDPOINT_COMIC_START_TITLE='/v1/public/comics?format=comic&formatType=comic&'
+
+MARVEL_API_PUBLIC_KEY=a75c535f57eacc9919d0d41d8f063297
+MARVEL_API_PRIVATE_KEY=ae74618d80e7be7a25d99b7946f8548f50c4adba
+
+LOOKING_FOR_CRITERIA_ACCEPTANCE = ['personajes', 'comics']

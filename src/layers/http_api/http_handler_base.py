@@ -11,16 +11,3 @@ class AbstractRequestHandlerMethods(abc.ABC):
     @abc.abstractmethod
     def get(self, request):
         """GET: Read"""
-
-
-    @abc.abstractmethod
-    def post(self, request):
-        """POST: Create"""
-
-    @abc.abstractmethod
-    def patch(self, request):
-        """PATCH: update"""
-
-    @abc.abstractmethod
-    def delete(self, request):
-        """DELETE: Delete"""

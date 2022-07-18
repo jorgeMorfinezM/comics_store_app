@@ -9,7 +9,7 @@ class Config(abc.ABC):
     connection"""
 
     @abc.abstractmethod
-    def __init__(self, url_host, endpoint, http_method, headers):
+    def __init__(self, url_host, endpoint, http_method, headers, search_term_param):
         """This constructor have the capability setup
         connection without engine"""
         raise NotImplementedError
