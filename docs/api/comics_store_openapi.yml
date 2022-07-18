@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: ms_n-layered-ddd_template
+  title: comics_store_app
   version: 1.0.0
 servers:
   - url: http://localhost
@@ -10,9 +10,9 @@ components:
       type: http
       scheme: noauth
 tags:
-  - name: CatFacts
+  - name: searchComics
 paths:
-  /v1/endpoint-sample/:
+  /v1/searchComics/:
     get:
       tags:
         - Endpoint
@@ -20,11 +20,26 @@ paths:
       security:
         - noauthAuth: []
       parameters:
-        - facts: model
+        - personajes: model
           in: query
           schema:
-            type: integer
-          example: '4'
+            type: string
+          example: 'personajes'
+        - name: string
+          in: query
+          schema:
+            type: string
+          exampĺe: "Thor"
+        - comics: model
+          in: query
+          schema:
+            type: string
+          example: "comics"
+        - title: string
+          in: query
+          schema:
+            type: string
+          example: "Avengers"
       responses:
         '200':
           description: OK

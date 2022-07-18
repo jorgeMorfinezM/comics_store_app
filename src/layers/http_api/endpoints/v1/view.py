@@ -7,55 +7,172 @@ from urllib.parse import urlencode
 from flask import Blueprint
 from flask import request
 import config
-from src.layers.domain.model.model import Model
+from src.layers.domain.model.comic import Comic
+from src.layers.domain.model.character import Character
 from src.adapters.persistence.api_client import APIClient
 from src.adapters.persistence.api_client import APIConfig
 from src.layers.http_api.bridge.controller.view_request_handler import ViewRequestHandler
-# from src.layers.http_api.bridge.utils import query_string_transform
-from src.layers.persistence.uow.model_uow import CatFactsUOW
-from src.layers.services.model_service import ModelService
+from src.layers.persistence.uow.domain_uow import DomainUOW
+from src.layers.services.character_service import CharacterService
+from src.layers.services.comic_service import ComicService
+from src.layers.http_api.bridge.utils.api_auth_params import APIAuthParams
 
-endpoint_blueprint = Blueprint('cat-facts', __name__, url_prefix='/v1/endpoint-sample')
+endpoint_blueprint = Blueprint('searchComics', __name__, url_prefix='/v1/searchComics')
 
 
-def _initialize(animal_type, fact_amount):
+def _initialize_params(search_term, search_param):
 
-    cat_facts_model = Model(animal_type, fact_amount)
+    params_endpoint_request = None
 
-    params = {"animal_type": cat_facts_model.animal_type,
-              "amount": cat_facts_model.fact_amount}
+    if search_term:
 
-    # animal_type=cat&amount=2
-    params_endpoint_request = urlencode(params)
-    # params_endpoint_request = query_string_transform._get_query_string(params)
+        params = {}
 
-    url_host = config.URL_HOST
+        if "personajes" in search_term:
+            if len(search_param) <= 2:
+                params.update({"nameStartsWith": search_param})
+
+            params.update({"name": search_param})
+
+        elif "comics" in search_term:
+            if len(search_param) <= 2:
+                params.update({"titleStartsWith": search_param})
+
+            params.update({"title": search_param})
+
+        # search_term=<search_term>&search_param=<search_param>
+        params_endpoint_request = urlencode(params)
+        # params_endpoint_request = query_string_transform._get_query_string(params)
+
+    return params_endpoint_request
+
+
+def _build_request_params(search_term, search_param, page, showing_range):
+
+    hash_param = APIAuthParams.hash
+    ts_param = APIAuthParams.ts
+    auth_api_key = APIAuthParams.api_key_public
+
+    auth_params = {
+        "hash": hash_param,
+        "ts": ts_param,
+        "apiKey": auth_api_key,
+
+    }
+
+    request_auth = urlencode(auth_params)
+
+    params_init = _initialize_params(search_term, search_param)
+
+    sorted_params = {"page": page,
+                     "showing_range": showing_range}
+
+    sorted_params = urlencode(sorted_params)
+
+    all_params_endpoint = params_init
+
+    if sorted_params:
+        all_params_endpoint += "&" + sorted_params
+
+    endpoint_params = params_init + "&" + request_auth
+
+    return endpoint_params
+
+
+def _build_search_request(search_term, search_param, page, showing_range):
+    endpoint_request = None
+    characters_services = None
+    comics_services = None
+    character_model = None
+    comic_model = None
+
+    endpoint_params = _build_request_params(search_term, search_param, page, showing_range)
+
+    url_host = config.MARVEL_URL_HOST
     http_method = 'GET'
     headers = config.HEADERS
-    endpoint_request = config.ENDPOINT_REQUEST + params_endpoint_request
 
-    api_config = APIConfig(url_host, endpoint_request, http_method, headers)
+    if not search_term:
 
-    api_client = APIClient(api_config)
+        endpoint_request = config.ENDPOINT_CHARACTERS_ORDERBY_NAME
 
-    # Initialize services and handlers
-    cat_facts_services = ModelService(CatFactsUOW(url_host, endpoint_request, http_method, headers, api_client))
-    cat_facts_request_handler = ViewRequestHandler(cat_facts_services, cat_facts_model)
+        api_config = APIConfig(url_host, endpoint_request, http_method, headers, endpoint_params)
 
-    return cat_facts_request_handler
+        api_client = APIClient(api_config)
+
+        characters_services = CharacterService(DomainUOW(url_host,
+                                                         endpoint_request,
+                                                         http_method,
+                                                         headers,
+                                                         search_param,
+                                                         api_client))
+
+        character_model: Character
+
+    else:
+        if "personajes" in search_term:
+            if len(search_param) <= 2:
+                endpoint_request = config.ENDPOINT_CHARACTERS_START_NAME
+
+            endpoint_request = config.ENDPOINT_CHARACTERS_BY_NAME
+
+            api_config = APIConfig(url_host, endpoint_request, http_method, headers, endpoint_params)
+
+            api_client = APIClient(api_config)
+
+            characters_services = CharacterService(DomainUOW(url_host,
+                                                             endpoint_request,
+                                                             http_method,
+                                                             headers,
+                                                             search_param,
+                                                             api_client))
+
+            character_model: Character
+
+        elif "comics" in search_term:
+            if len(search_param) <= 2:
+                endpoint_request = config.ENDPOINT_COMIC_START_TITLE
+
+            endpoint_request = config.ENDPOINT_COMIC_BY_TITLE
+
+            api_config = APIConfig(url_host, endpoint_request, http_method, headers, endpoint_params)
+
+            api_client = APIClient(api_config)
+
+            comics_services = ComicService(DomainUOW(url_host,
+                                                     endpoint_request,
+                                                     http_method,
+                                                     headers,
+                                                     search_param,
+                                                     api_client))
+
+            comic_model: Comic
+
+    request_handler = ViewRequestHandler(characters_services, character_model,
+                                         comics_services, comic_model)
+
+    return request_handler
 
 
-@endpoint_blueprint.get('/<arg>')
-def get_a_company(arg):
-    '''..'''
-
-    animal_type = "cat"
-
-    request_handler = _initialize(animal_type, arg)
+@endpoint_blueprint.get('/')
+def search_comics():
+    """.."""
 
     page = request.args.get('page')
     showing_range = request.args.get('showing_range')
 
-    response = request_handler.get_cat_facts(arg, page, showing_range)
+    search_term = request.args.get('searchTerm')
+    search_param = None
+
+    if "personajes" == search_term:
+        search_param = request.args.get('name')
+    elif "comics" == search_term:
+        search_param = request.args.get('title')
+
+    params = _build_request_params(search_term, search_param, page, showing_range)
+
+    request_handler = _build_search_request(search_term, search_param, page, showing_range)
+
+    response = request_handler.search_comics(search_term, page, showing_range, params)
 
     return response

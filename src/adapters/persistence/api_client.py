@@ -9,13 +9,14 @@ from src.layers.persistence.base_persistence import APIConnect
 
 class APIConfig(Config):
 
-    def __init__(self, url_host, endpoint, http_method, headers):
-        super().__init__(url_host, endpoint, http_method, headers)
+    def __init__(self, url_host, endpoint, http_method, headers, search_term_param):
+        super().__init__(url_host, endpoint, http_method, headers, search_term_param)
 
         self.url_host = url_host
         self.endpoint = endpoint
         self.http_method = http_method
         self.headers = headers
+        self.search_term_param = search_term_param
 
 
 class APIClient(APIConnect):
@@ -38,18 +39,6 @@ class APIClient(APIConnect):
         :param: params: Arguments to parte on the requested endpoint.
         :return: self.response: Response API requested endpoint object
         """
-
-        # if ("POST" or "PUT" or "PATCH") == self.api_config.http_method and self.api_config.payload:
-        '''
-        
-        if (payload and self.api_config.cat_facts_model.facts) is not None:
-
-            self.response = requests.request(method=self.api_config.http_method,
-                                             url=self.api_config.url_host,
-                                             headers=self.api_config.headers,
-                                             params=self.api_config.cat_facts_model.facts,
-                                             data=payload)
-        '''
 
         if params is not None:
 

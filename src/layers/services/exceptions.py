@@ -11,6 +11,3 @@ class BaseCustomException(Exception):
 class InvalidDictionaryFormat(BaseCustomException):
     """Raised when dictionary object expected have malformed dictionary object format"""
 
-
-class IndexOutOfRange(BaseCustomException):
-    """Raised when number param requested not is an Integer data type"""
